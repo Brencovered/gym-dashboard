@@ -20,18 +20,18 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; max-width: 430px; margin: 0 auto; overflow-x: hidden; }
-
+ 
   .header { padding: 20px 20px 0; display: flex; justify-content: space-between; align-items: flex-start; }
   .header-left .day-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); }
   .header-left .title { font-family: 'Barlow Condensed', sans-serif; font-size: 36px; font-weight: 800; line-height: 1; color: var(--text); margin-top: 2px; }
   .streak-badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
   .streak-badge span { color: var(--accent); font-weight: 600; }
-
+ 
   .spine-banner { margin: 16px 20px 0; background: #1a1208; border: 1px solid #3d2800; border-left: 3px solid var(--warn); border-radius: 10px; padding: 10px 14px; display: flex; gap: 10px; align-items: flex-start; }
   .spine-banner .icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
   .spine-banner p { font-size: 12px; color: #cc9966; line-height: 1.5; }
   .spine-banner strong { color: var(--warn); font-weight: 500; }
-
+ 
   .day-selector { display: flex; gap: 8px; padding: 20px 20px 0; overflow-x: auto; scrollbar-width: none; }
   .day-selector::-webkit-scrollbar { display: none; }
   .day-btn { flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 16px; cursor: pointer; transition: all 0.15s; text-align: center; }
@@ -41,10 +41,10 @@
   .day-btn .d-label { font-size: 11px; color: var(--dim); margin-top: 2px; white-space: nowrap; }
   .day-btn.active .d-label { color: #3a3a1a; }
   .day-btn.rest { opacity: 0.5; }
-
+ 
   .workout-area { padding: 16px 20px 0; }
   .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
-
+ 
   .timer-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
   .timer-info { display: flex; flex-direction: column; }
   .timer-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
@@ -53,7 +53,7 @@
   .btn-icon { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.1s; color: var(--text); }
   .btn-icon:active { transform: scale(0.93); }
   .btn-icon.primary { background: var(--accent); border-color: var(--accent); color: #1a1a1a; }
-
+ 
   .exercise-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; overflow: hidden; transition: all 0.2s; }
   .exercise-card.active-ex { border-color: var(--accent); }
   .exercise-card.completed-ex { opacity: 0.55; }
@@ -66,16 +66,16 @@
   .ex-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
   .ex-chevron { color: var(--dim); font-size: 18px; transition: transform 0.2s; flex-shrink: 0; }
   .ex-chevron.open { transform: rotate(180deg); }
-
+ 
   .ex-body { display: none; border-top: 1px solid var(--border); padding: 14px 16px; }
   .ex-body.open { display: block; }
-
+ 
   /* Illustration */
   .ex-illustration { background: var(--surface2); border-radius: 10px; padding: 12px; margin-bottom: 12px; display: flex; gap: 12px; align-items: center; }
   .ex-illustration svg { flex-shrink: 0; }
   .ex-desc { font-size: 12px; color: #aaa; line-height: 1.6; }
   .ex-desc strong { color: var(--text); font-weight: 500; display: block; margin-bottom: 3px; font-size: 13px; }
-
+ 
   .sets-grid { display: grid; grid-template-columns: 40px 1fr 1fr 44px; gap: 8px; align-items: center; margin-bottom: 8px; }
   .sets-grid .col-head { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--dim); text-align: center; }
   .set-num-badge { width: 28px; height: 28px; background: var(--surface2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--muted); margin: 0 auto; }
@@ -84,36 +84,36 @@
   .set-done-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; margin: 0 auto; transition: all 0.1s; color: var(--dim); }
   .set-done-btn.done { background: #1a2a1a; border-color: #2a4a2a; color: #5ab55a; }
   .set-done-btn:active { transform: scale(0.9); }
-
+ 
   .cue-box { background: var(--surface2); border-radius: 10px; padding: 12px 14px; margin-top: 10px; }
   .cue-box .cue-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
   .cue-box p { font-size: 13px; color: #aaa; line-height: 1.6; }
   .spine-cue { background: #1a1208; border: 1px solid #3d2800; }
   .spine-cue .cue-label { color: var(--warn); }
   .spine-cue p { color: #cc9966; }
-
+ 
   .warmup-list { list-style: none; }
   .warmup-list li { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--muted); }
   .warmup-list li:last-child { border-bottom: none; }
   .warmup-check { width: 20px; height: 20px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; transition: all 0.15s; color: transparent; }
   .warmup-check.done { background: #1a2a1a; border-color: #2a4a2a; color: #5ab55a; }
-
+ 
   .progress-section { padding: 16px 20px 0; }
   .progress-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .progress-row span { font-size: 13px; color: var(--muted); }
   .progress-row strong { font-size: 13px; color: var(--text); }
   .progress-track { height: 4px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.4s ease; }
-
+ 
   .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: var(--surface); border-top: 1px solid var(--border); display: flex; padding: 8px 0 16px; }
   .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 0; background: none; border: none; color: var(--dim); font-family: 'DM Sans', sans-serif; }
   .nav-btn.active { color: var(--accent); }
   .nav-btn svg { width: 22px; height: 22px; }
   .nav-btn span { font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; }
-
-  .screen { display: none; padding-bottom: 90px; }
+ 
+  .screen { display: none; padding-bottom: 110px; }
   .screen.active { display: block; }
-
+ 
   .log-list { padding: 0 20px; }
   .log-entry { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
   .log-date { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; }
@@ -121,16 +121,16 @@
   .log-stats { display: flex; gap: 16px; }
   .log-stat { font-size: 12px; color: var(--muted); }
   .log-stat strong { color: var(--accent); }
-
+ 
   .notes-area { padding: 0 20px; }
-  .notes-textarea { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.7; resize: none; min-height: 200px; }
+  .notes-textarea { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.7; resize: none; min-height: 120px; }
   .notes-textarea:focus { outline: none; border-color: var(--accent2); }
   .save-btn { margin-top: 10px; width: 100%; background: var(--accent2); border: none; border-radius: 12px; padding: 14px; color: white; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; }
   .save-btn:active { opacity: 0.85; }
-
+ 
   .screen-header { padding: 20px 20px 16px; }
   .screen-header h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 800; }
-
+ 
   .rest-overlay { display: none; position: fixed; inset: 0; background: rgba(10,10,11,0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
   .rest-overlay.active { display: flex; }
   .rest-big { font-family: 'Barlow Condensed', sans-serif; font-size: 90px; font-weight: 800; color: var(--accent2); line-height: 1; }
@@ -140,14 +140,14 @@
 </style>
 </head>
 <body>
-
+ 
 <div class="rest-overlay" id="restOverlay">
   <div class="rest-label">Rest</div>
   <div class="rest-big" id="restCountdown">90</div>
   <div class="rest-label">seconds</div>
   <button class="rest-skip" onclick="skipRest()">Skip rest</button>
 </div>
-
+ 
 <div class="screen active" id="screen-workout">
   <div class="header page-top">
     <div class="header-left">
@@ -158,14 +158,14 @@
       <div class="streak-badge">🔥 <span id="streakCount">0</span> week</div>
     </div>
   </div>
-
+ 
   <div class="spine-banner">
     <div class="icon">⚠️</div>
     <p><strong>Spine reminder:</strong> Warm up fully before loading. No lumbar extension under load. Stop if you feel radiating pain down the right leg.</p>
   </div>
-
+ 
   <div class="day-selector" id="daySelector"></div>
-
+ 
   <div class="progress-section">
     <div class="progress-row">
       <span>Session progress</span>
@@ -175,7 +175,7 @@
       <div class="progress-fill" id="progressFill" style="width:0%"></div>
     </div>
   </div>
-
+ 
   <div class="workout-area">
     <div class="section-label">Warm-up — do this first</div>
     <div class="exercise-card" id="warmupCard">
@@ -191,12 +191,17 @@
         <ul class="warmup-list" id="warmupList"></ul>
       </div>
     </div>
-
+ 
     <div class="section-label" style="margin-top:14px">Exercises</div>
     <div id="exerciseList"></div>
+ 
+    <div style="margin-top:16px;padding-bottom:4px;">
+      <button onclick="finishSession()" id="finishBtn" style="width:100%;background:#c8f563;border:none;border-radius:14px;padding:18px;color:#1a1a1a;font-family:sans-serif;font-size:17px;font-weight:700;cursor:pointer;letter-spacing:0.3px;">Finish &amp; Save Session</button>
+      <div id="finishStatus" style="display:none;margin-top:10px;background:#1a2a1a;border:1px solid #2a4a2a;border-radius:10px;padding:12px 14px;font-size:13px;color:#5ab55a;text-align:center;">Session saved to log</div>
+    </div>
   </div>
 </div>
-
+ 
 <div class="screen" id="screen-log">
   <div class="screen-header">
     <div class="day-label" style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">History</div>
@@ -205,8 +210,9 @@
   <div class="log-list" id="logList">
     <div style="padding:40px 0; text-align:center; color:var(--dim); font-size:14px;">Complete sessions to see your log here</div>
   </div>
+  <div style="padding:0 20px 16px;"><button onclick="clearLog()" style="width:100%;background:#222224;border:1px solid #2a2a2e;border-radius:10px;padding:10px;color:#555;font-family:sans-serif;font-size:12px;cursor:pointer;">Clear log</button></div>
 </div>
-
+ 
 <div class="screen" id="screen-notes">
   <div class="screen-header">
     <div class="day-label" style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">PT Notes</div>
@@ -218,15 +224,15 @@
       <p>Log how your back felt, any radiating symptoms, exercises that worked or caused discomfort. This is your data for adjusting the programme.</p>
     </div>
     <textarea class="notes-textarea" id="notesInput" placeholder="How did the session feel? Any tightness or leg symptoms? What weight did you hit on hip thrusts?&#10;&#10;Log it here..."></textarea>
-    <div style="display:flex;gap:10px;margin-top:12px;">
-      <button id="saveBtn" onclick="saveNote()" style="flex:1;background:var(--accent2);border:none;border-radius:12px;padding:16px;color:white;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;letter-spacing:0.3px;">Save note</button>
-      <button onclick="copyAllNotes()" style="flex:0 0 auto;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;">Copy all</button>
+    <div style="display:flex;gap:10px;margin-top:12px;width:100%;">
+      <button id="saveBtn" onclick="saveNote()" style="flex:1;display:block;background:#5b8fff;border:none;border-radius:12px;padding:16px;color:#fff;font-family:sans-serif;font-size:16px;font-weight:700;cursor:pointer;">Save note</button>
+      <button onclick="copyAllNotes()" style="flex:0 0 auto;display:block;background:#222224;border:1px solid #2a2a2e;border-radius:12px;padding:16px 14px;color:#888;font-family:sans-serif;font-size:13px;cursor:pointer;">Copy all</button>
     </div>
     <div id="saveStatus" style="display:none;margin-top:10px;background:#1a2a1a;border:1px solid #2a4a2a;border-radius:10px;padding:10px 14px;font-size:13px;color:#5ab55a;text-align:center;">Note saved</div>
     <div style="margin-top:16px;" id="savedNotesList"></div>
   </div>
 </div>
-
+ 
 <nav class="bottom-nav">
   <button class="nav-btn active" onclick="showScreen('workout',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h10M7 13h6"/></svg>
@@ -241,7 +247,7 @@
     <span>Notes</span>
   </button>
 </nav>
-
+ 
 <script>
 // SVG illustrations — stick figure style, white stroke on dark bg
 const ILLUSTRATIONS = {
@@ -810,7 +816,7 @@ const ILLUSTRATIONS = {
     desc: `Set cables low (ankle height). Stand in the middle, slight forward lean. Arms start wide and low, sweep up and inward in an arc — like hugging a large barrel. Squeeze at the top where hands meet. Targets lower and mid chest.`
   }
 };
-
+ 
 const DAYS = [
   {
     id: 'mon', name: 'MON', label: 'Glutes & Legs',
@@ -888,7 +894,7 @@ const DAYS = [
   { id: 'sat', name: 'SAT', label: 'Rest / Stretch', rest: true },
   { id: 'sun', name: 'SUN', label: 'Rest / Stretch', rest: true },
 ];
-
+ 
 const ORDERED_DAYS = ['mon','tue','wed','thu','fri','sat','sun'];
 let activeDay = 'mon';
 let timerInterval = null;
@@ -899,9 +905,9 @@ let restSeconds = 0;
 let setsDone = 0;
 let totalSets = 0;
 let setsState = {};
-
+ 
 function getDayData(id) { return DAYS.find(d => d.id === id); }
-
+ 
 function buildDaySelector() {
   const el = document.getElementById('daySelector');
   el.innerHTML = '';
@@ -914,7 +920,7 @@ function buildDaySelector() {
     el.appendChild(btn);
   });
 }
-
+ 
 function selectDay(id) {
   activeDay = id;
   setsDone = 0;
@@ -922,12 +928,12 @@ function selectDay(id) {
   buildDaySelector();
   renderWorkout();
 }
-
+ 
 function renderWorkout() {
   const d = getDayData(activeDay);
   document.getElementById('currentDayLabel').textContent = d.name;
   document.getElementById('currentWorkoutTitle').textContent = d.label;
-
+ 
   if (d.rest) {
     document.getElementById('warmupCard').style.display = 'none';
     document.getElementById('exerciseList').innerHTML = `
@@ -940,9 +946,9 @@ function renderWorkout() {
     document.getElementById('progressFill').style.width = '0%';
     return;
   }
-
+ 
   document.getElementById('warmupCard').style.display = 'block';
-
+ 
   const wl = document.getElementById('warmupList');
   wl.innerHTML = '';
   d.warmup.forEach((item, i) => {
@@ -972,11 +978,11 @@ function renderWorkout() {
     }
     wl.appendChild(li);
   });
-
+ 
   totalSets = d.exercises.reduce((a,e) => a + e.sets, 0);
   const el = document.getElementById('exerciseList');
   el.innerHTML = '';
-
+ 
   d.exercises.forEach((ex, i) => {
     if (!setsState[i]) {
       setsState[i] = Array(ex.sets).fill({weight:'', reps:'', done: false});
@@ -984,7 +990,7 @@ function renderWorkout() {
     const card = document.createElement('div');
     card.className = 'exercise-card';
     card.id = `excard-${i}`;
-
+ 
     let setsHTML = `<div class="sets-grid"><div class="col-head">Set</div><div class="col-head">Weight</div><div class="col-head">Reps</div><div></div>`;
     for (let s = 0; s < ex.sets; s++) {
       setsHTML += `
@@ -994,16 +1000,16 @@ function renderWorkout() {
         <div class="set-done-btn" id="sd-${i}-${s}" onclick="toggleSetDone(${i},${s})">✓</div>`;
     }
     setsHTML += '</div>';
-
+ 
     const ill = ILLUSTRATIONS[ex.name];
     const illustrationHTML = ill ? `
       <div class="ex-illustration">
         ${ill.svg}
         <div class="ex-desc"><strong>How to do it</strong>${ill.desc}</div>
       </div>` : '';
-
+ 
     const spineBlock = ex.spineNote ? `<div class="cue-box spine-cue" style="margin-top:8px;"><div class="cue-label">⚠ spine note</div><p>${ex.spineNote}</p></div>` : '';
-
+ 
     card.innerHTML = `
       <div class="ex-header" onclick="toggleEx(${i})">
         <div class="ex-num" id="exnum-${i}">${i+1}</div>
@@ -1021,10 +1027,10 @@ function renderWorkout() {
       </div>`;
     el.appendChild(card);
   });
-
+ 
   updateProgress();
 }
-
+ 
 function toggleEx(id) {
   const body = document.getElementById(`body-${id}`);
   const chev = document.getElementById(`chevron-${id}`);
@@ -1032,7 +1038,7 @@ function toggleEx(id) {
   body.classList.toggle('open');
   if (chev) chev.classList.toggle('open');
 }
-
+ 
 function toggleSetDone(exIdx, setIdx) {
   const btn = document.getElementById(`sd-${exIdx}-${setIdx}`);
   const wasDone = btn.classList.contains('done');
@@ -1046,7 +1052,7 @@ function toggleSetDone(exIdx, setIdx) {
   updateProgress();
   updateExCardState(exIdx);
 }
-
+ 
 function updateExCardState(exIdx) {
   const d = getDayData(activeDay);
   const ex = d.exercises[exIdx];
@@ -1057,13 +1063,13 @@ function updateExCardState(exIdx) {
   }
   card.className = 'exercise-card' + (doneSets === ex.sets ? ' completed-ex' : doneSets > 0 ? ' active-ex' : '');
 }
-
+ 
 function updateProgress() {
   document.getElementById('progressText').textContent = `${setsDone} / ${totalSets} sets`;
   const pct = totalSets > 0 ? Math.round((setsDone / totalSets) * 100) : 0;
   document.getElementById('progressFill').style.width = pct + '%';
 }
-
+ 
 function startTimer() {
   if (timerRunning) return;
   timerRunning = true;
@@ -1084,7 +1090,7 @@ function resetTimer() {
 function formatTime(s) {
   return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
 }
-
+ 
 function startRest(seconds) {
   clearInterval(restInterval);
   restSeconds = seconds;
@@ -1100,24 +1106,26 @@ function skipRest() {
   clearInterval(restInterval);
   document.getElementById('restOverlay').classList.remove('active');
 }
-
-// Notes — localStorage with in-memory fallback
-let _notesMemory = [];
-function lsGet() {
-  try { return JSON.parse(localStorage.getItem('ptNotes') || '[]'); }
-  catch(e) { return _notesMemory; }
+ 
+// Storage — localStorage with in-memory fallback, keyed
+let _memory = {};
+function lsGet(key) {
+  key = key || 'ptNotes';
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+  catch(e) { return _memory[key] || []; }
 }
-function lsSet(notes) {
-  _notesMemory = notes;
-  try { localStorage.setItem('ptNotes', JSON.stringify(notes)); } catch(e) {}
+function lsSet(key, data) {
+  if (typeof key === 'object') { data = key; key = 'ptNotes'; } // backwards compat
+  _memory[key] = data;
+  try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {}
 }
 function saveNote() {
   const text = document.getElementById('notesInput').value.trim();
   if (!text) return;
-  const notes = lsGet();
+  const notes = lsGet('ptNotes');
   const now = new Date();
   notes.unshift({ text, date: now.toLocaleDateString('en-AU'), time: now.toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'}) });
-  lsSet(notes);
+  lsSet('ptNotes', notes);
   document.getElementById('notesInput').value = '';
   const status = document.getElementById('saveStatus');
   status.style.display = 'block';
@@ -1125,7 +1133,7 @@ function saveNote() {
   renderNotes();
 }
 function copyAllNotes() {
-  const notes = lsGet();
+  const notes = lsGet('ptNotes');
   if (!notes.length) { alert('No notes saved yet.'); return; }
   const text = notes.map(n => `${n.date} ${n.time}\n${n.text}`).join('\n\n---\n\n');
   navigator.clipboard.writeText(text).then(() => {
@@ -1136,7 +1144,7 @@ function copyAllNotes() {
   }).catch(() => { alert('Copy failed — try long-pressing the note text instead.'); });
 }
 function renderNotes() {
-  const notes = lsGet();
+  const notes = lsGet('ptNotes');
   const el = document.getElementById('savedNotesList');
   if (!notes.length) { el.innerHTML = '<div style="font-size:13px;color:var(--dim);text-align:center;padding:20px 0;">No notes yet — save your first one above</div>'; return; }
   el.innerHTML = notes.slice(0,10).map((n,i) => `
@@ -1149,20 +1157,106 @@ function renderNotes() {
     </div>`).join('');
 }
 function deleteNote(i) {
-  const notes = lsGet();
+  const notes = lsGet('ptNotes');
   notes.splice(i, 1);
-  lsSet(notes);
+  lsSet('ptNotes', notes);
   renderNotes();
 }
-
+ 
+function finishSession() {
+  const d = getDayData(activeDay);
+  if (!d || d.rest) return;
+  const sessionData = {
+    day: activeDay,
+    label: d.label,
+    date: new Date().toLocaleDateString('en-AU', {weekday:'short', day:'numeric', month:'short'}),
+    time: new Date().toLocaleTimeString('en-AU', {hour:'2-digit', minute:'2-digit'}),
+    duration: formatTime(timerSeconds),
+    setsCompleted: setsDone,
+    totalSets: totalSets,
+    exercises: d.exercises.map((ex, i) => {
+      const sets = [];
+      for (let s = 0; s < ex.sets; s++) {
+        const wEl = document.getElementById('w-' + i + '-' + s);
+        const rEl = document.getElementById('r-' + i + '-' + s);
+        const doneEl = document.getElementById('sd-' + i + '-' + s);
+        sets.push({
+          weight: wEl ? wEl.value : '',
+          reps: rEl ? rEl.value : '',
+          done: doneEl ? doneEl.classList.contains('done') : false
+        });
+      }
+      return { name: ex.name, sets };
+    })
+  };
+  const logs = lsGet('ptLog');
+  logs.unshift(sessionData);
+  lsSet('ptLog', logs);
+  const status = document.getElementById('finishStatus');
+  status.style.display = 'block';
+  setTimeout(() => { status.style.display = 'none'; }, 3000);
+  // update streak
+  const streak = parseInt(localStorage.getItem('weekStreak') || '0') + 1;
+  localStorage.setItem('weekStreak', streak);
+  document.getElementById('streakCount').textContent = streak;
+}
+ 
+function renderLog() {
+  const logs = lsGet('ptLog');
+  const el = document.getElementById('logList');
+  if (!logs.length) {
+    el.innerHTML = '<div style="padding:40px 0;text-align:center;color:#555;font-size:14px;">Complete sessions to see your log here</div>';
+    return;
+  }
+  el.innerHTML = logs.map((s, si) => {
+    const exRows = s.exercises.map(ex => {
+      const setRows = ex.sets.map((set, i) => {
+        const w = set.weight || '—';
+        const r = set.reps || '—';
+        const col = set.done ? '#5ab55a' : '#555';
+        return '<span style="font-size:11px;color:' + col + '">Set ' + (i+1) + ': ' + w + 'kg × ' + r + '</span>';
+      }).join('  ');
+      return '<div style="margin-bottom:6px;"><div style="font-size:13px;color:#f0f0f0;font-weight:500;margin-bottom:3px;">' + ex.name + '</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + setRows + '</div></div>';
+    }).join('');
+    return '<div style="background:#181819;border:1px solid #2a2a2e;border-radius:14px;padding:16px;margin-bottom:12px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">' +
+        '<div>' +
+          '<div style="font-size:11px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">' + s.date + ' · ' + s.time + '</div>' +
+          '<div style="font-family:sans-serif;font-size:22px;font-weight:800;color:#f0f0f0;line-height:1;">' + s.label + '</div>' +
+        '</div>' +
+        '<div style="text-align:right;">' +
+          '<div style="font-size:11px;color:#888;">⏱ ' + (s.duration || '—') + '</div>' +
+          '<div style="font-size:11px;color:#c8f563;margin-top:2px;">' + s.setsCompleted + '/' + s.totalSets + ' sets</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="border-top:1px solid #2a2a2e;padding-top:10px;">' + exRows + '</div>' +
+      '<div onclick="deleteLog(' + si + ')" style="margin-top:10px;font-size:11px;color:#555;text-align:right;cursor:pointer;">Delete</div>' +
+    '</div>';
+  }).join('');
+}
+ 
+function deleteLog(i) {
+  const logs = lsGet('ptLog');
+  logs.splice(i, 1);
+  lsSet('ptLog', logs);
+  renderLog();
+}
+ 
+function clearLog() {
+  if (!confirm('Clear all session logs?')) return;
+  lsSet('ptLog', []);
+  renderLog();
+}
+ 
 function showScreen(name, btn) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(`screen-${name}`).classList.add('active');
+  document.getElementById('screen-' + name).classList.add('active');
   btn.classList.add('active');
   if (name === 'notes') renderNotes();
+  if (name === 'log') renderLog();
 }
-
+ 
 document.addEventListener('DOMContentLoaded', () => {
   const wa = document.querySelector('.workout-area');
   const timerBar = document.createElement('div');
@@ -1178,10 +1272,10 @@ document.addEventListener('DOMContentLoaded', () => {
       <button class="btn-icon primary" onclick="timerRunning ? pauseTimer() : startTimer()" id="timerToggle">▶</button>
     </div>`;
   wa.insertBefore(timerBar, wa.firstChild);
-
+ 
   const streakVal = parseInt(localStorage.getItem('weekStreak') || '0');
   document.getElementById('streakCount').textContent = streakVal;
-
+ 
   buildDaySelector();
   renderWorkout();
 });
