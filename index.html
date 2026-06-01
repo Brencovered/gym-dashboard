@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Brendan's PT Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0f;
+    --surface: #181819;
+    --surface2: #222224;
+    --border: #2a2a2e;
+    --accent: #c8f563;
+    --accent2: #5b8fff;
+    --warn: #ff6b4a;
+    --text: #f0f0f0;
+    --muted: #888;
+    --dim: #555;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; max-width: 430px; margin: 0 auto; overflow-x: hidden; }
+
+  .header { padding: 20px 20px 0; display: flex; justify-content: space-between; align-items: flex-start; }
+  .header-left .day-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); }
+  .header-left .title { font-family: 'Barlow Condensed', sans-serif; font-size: 36px; font-weight: 800; line-height: 1; color: var(--text); margin-top: 2px; }
+  .streak-badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+  .streak-badge span { color: var(--accent); font-weight: 600; }
+
+  .spine-banner { margin: 16px 20px 0; background: #1a1208; border: 1px solid #3d2800; border-left: 3px solid var(--warn); border-radius: 10px; padding: 10px 14px; display: flex; gap: 10px; align-items: flex-start; }
+  .spine-banner .icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+  .spine-banner p { font-size: 12px; color: #cc9966; line-height: 1.5; }
+  .spine-banner strong { color: var(--warn); font-weight: 500; }
+
+  .day-selector { display: flex; gap: 8px; padding: 20px 20px 0; overflow-x: auto; scrollbar-width: none; }
+  .day-selector::-webkit-scrollbar { display: none; }
+  .day-btn { flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 16px; cursor: pointer; transition: all 0.15s; text-align: center; }
+  .day-btn.active { background: var(--accent); border-color: var(--accent); }
+  .day-btn .d-name { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+  .day-btn.active .d-name { color: #1a1a1a; }
+  .day-btn .d-label { font-size: 11px; color: var(--dim); margin-top: 2px; white-space: nowrap; }
+  .day-btn.active .d-label { color: #3a3a1a; }
+  .day-btn.rest { opacity: 0.5; }
+
+  .workout-area { padding: 16px 20px 0; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+
+  .timer-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .timer-info { display: flex; flex-direction: column; }
+  .timer-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .timer-display { font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 700; color: var(--accent); line-height: 1; margin-top: 2px; }
+  .timer-controls { display: flex; gap: 8px; }
+  .btn-icon { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.1s; color: var(--text); }
+  .btn-icon:active { transform: scale(0.93); }
+  .btn-icon.primary { background: var(--accent); border-color: var(--accent); color: #1a1a1a; }
+
+  .exercise-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; overflow: hidden; transition: all 0.2s; }
+  .exercise-card.active-ex { border-color: var(--accent); }
+  .exercise-card.completed-ex { opacity: 0.55; }
+  .ex-header { padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .ex-num { width: 28px; height: 28px; border-radius: 8px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: var(--muted); flex-shrink: 0; }
+  .exercise-card.active-ex .ex-num { background: var(--accent); border-color: var(--accent); color: #1a1a1a; }
+  .exercise-card.completed-ex .ex-num { background: #1a2a1a; border-color: #2a4a2a; color: #4a8a4a; }
+  .ex-info { flex: 1; min-width: 0; }
+  .ex-name { font-size: 15px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ex-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .ex-chevron { color: var(--dim); font-size: 18px; transition: transform 0.2s; flex-shrink: 0; }
+  .ex-chevron.open { transform: rotate(180deg); }
+
+  .ex-body { display: none; border-top: 1px solid var(--border); padding: 14px 16px; }
+  .ex-body.open { display: block; }
+
+  /* Illustration */
+  .ex-illustration { background: var(--surface2); border-radius: 10px; padding: 12px; margin-bottom: 12px; display: flex; gap: 12px; align-items: center; }
+  .ex-illustration svg { flex-shrink: 0; }
+  .ex-desc { font-size: 12px; color: #aaa; line-height: 1.6; }
+  .ex-desc strong { color: var(--text); font-weight: 500; display: block; margin-bottom: 3px; font-size: 13px; }
+
+  .sets-grid { display: grid; grid-template-columns: 40px 1fr 1fr 44px; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .sets-grid .col-head { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--dim); text-align: center; }
+  .set-num-badge { width: 28px; height: 28px; background: var(--surface2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--muted); margin: 0 auto; }
+  .set-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; font-size: 14px; color: var(--text); font-family: 'DM Sans', sans-serif; width: 100%; text-align: center; -webkit-appearance: none; }
+  .set-input:focus { outline: none; border-color: var(--accent); }
+  .set-done-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; margin: 0 auto; transition: all 0.1s; color: var(--dim); }
+  .set-done-btn.done { background: #1a2a1a; border-color: #2a4a2a; color: #5ab55a; }
+  .set-done-btn:active { transform: scale(0.9); }
+
+  .cue-box { background: var(--surface2); border-radius: 10px; padding: 12px 14px; margin-top: 10px; }
+  .cue-box .cue-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
+  .cue-box p { font-size: 13px; color: #aaa; line-height: 1.6; }
+  .spine-cue { background: #1a1208; border: 1px solid #3d2800; }
+  .spine-cue .cue-label { color: var(--warn); }
+  .spine-cue p { color: #cc9966; }
+
+  .warmup-list { list-style: none; }
+  .warmup-list li { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--muted); }
+  .warmup-list li:last-child { border-bottom: none; }
+  .warmup-check { width: 20px; height: 20px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; transition: all 0.15s; color: transparent; }
+  .warmup-check.done { background: #1a2a1a; border-color: #2a4a2a; color: #5ab55a; }
+
+  .progress-section { padding: 16px 20px 0; }
+  .progress-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .progress-row span { font-size: 13px; color: var(--muted); }
+  .progress-row strong { font-size: 13px; color: var(--text); }
+  .progress-track { height: 4px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.4s ease; }
+
+  .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: var(--surface); border-top: 1px solid var(--border); display: flex; padding: 8px 0 16px; }
+  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 0; background: none; border: none; color: var(--dim); font-family: 'DM Sans', sans-serif; }
+  .nav-btn.active { color: var(--accent); }
+  .nav-btn svg { width: 22px; height: 22px; }
+  .nav-btn span { font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  .screen { display: none; padding-bottom: 90px; }
+  .screen.active { display: block; }
+
+  .log-list { padding: 0 20px; }
+  .log-entry { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+  .log-date { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; }
+  .log-title { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); margin: 4px 0; }
+  .log-stats { display: flex; gap: 16px; }
+  .log-stat { font-size: 12px; color: var(--muted); }
+  .log-stat strong { color: var(--accent); }
+
+  .notes-area { padding: 0 20px; }
+  .notes-textarea { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.7; resize: none; min-height: 200px; }
+  .notes-textarea:focus { outline: none; border-color: var(--accent2); }
+  .save-btn { margin-top: 10px; width: 100%; background: var(--accent2); border: none; border-radius: 12px; padding: 14px; color: white; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .save-btn:active { opacity: 0.85; }
+
+  .screen-header { padding: 20px 20px 16px; }
+  .screen-header h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 800; }
+
+  .rest-overlay { display: none; position: fixed; inset: 0; background: rgba(10,10,11,0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+  .rest-overlay.active { display: flex; }
+  .rest-big { font-family: 'Barlow Condensed', sans-serif; font-size: 90px; font-weight: 800; color: var(--accent2); line-height: 1; }
+  .rest-label { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); }
+  .rest-skip { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 32px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; margin-top: 16px; }
+  .page-top { padding-top: 8px; }
+</style>
+</head>
+<body>
+
+<div class="rest-overlay" id="restOverlay">
+  <div class="rest-label">Rest</div>
+  <div class="rest-big" id="restCountdown">90</div>
+  <div class="rest-label">seconds</div>
+  <button class="rest-skip" onclick="skipRest()">Skip rest</button>
+</div>
+
+<div class="screen active" id="screen-workout">
+  <div class="header page-top">
+    <div class="header-left">
+      <div class="day-label" id="currentDayLabel">Today</div>
+      <div class="title" id="currentWorkoutTitle">Loading</div>
+    </div>
+    <div class="header-right">
+      <div class="streak-badge">🔥 <span id="streakCount">0</span> week</div>
+    </div>
+  </div>
+
+  <div class="spine-banner">
+    <div class="icon">⚠️</div>
+    <p><strong>Spine reminder:</strong> Warm up fully before loading. No lumbar extension under load. Stop if you feel radiating pain down the right leg.</p>
+  </div>
+
+  <div class="day-selector" id="daySelector"></div>
+
+  <div class="progress-section">
+    <div class="progress-row">
+      <span>Session progress</span>
+      <strong id="progressText">0 / 0 sets</strong>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="workout-area">
+    <div class="section-label">Warm-up — do this first</div>
+    <div class="exercise-card" id="warmupCard">
+      <div class="ex-header" onclick="toggleEx('warmup')">
+        <div class="ex-num">🌡</div>
+        <div class="ex-info">
+          <div class="ex-name">Warm-up protocol</div>
+          <div class="ex-meta">~15 min — spine needs this</div>
+        </div>
+        <div class="ex-chevron" id="chevron-warmup">▾</div>
+      </div>
+      <div class="ex-body" id="body-warmup">
+        <ul class="warmup-list" id="warmupList"></ul>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:14px">Exercises</div>
+    <div id="exerciseList"></div>
+  </div>
+</div>
+
+<div class="screen" id="screen-log">
+  <div class="screen-header">
+    <div class="day-label" style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">History</div>
+    <h2>Session Log</h2>
+  </div>
+  <div class="log-list" id="logList">
+    <div style="padding:40px 0; text-align:center; color:var(--dim); font-size:14px;">Complete sessions to see your log here</div>
+  </div>
+</div>
+
+<div class="screen" id="screen-notes">
+  <div class="screen-header">
+    <div class="day-label" style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">PT Notes</div>
+    <h2>Session Notes</h2>
+  </div>
+  <div class="notes-area">
+    <div class="spine-banner" style="margin:0 0 14px;">
+      <div class="icon">📝</div>
+      <p>Log how your back felt, any radiating symptoms, exercises that worked or caused discomfort. This is your data for adjusting the programme.</p>
+    </div>
+    <textarea class="notes-textarea" id="notesInput" placeholder="How did the session feel? Any tightness or leg symptoms? What weight did you hit on hip thrusts?&#10;&#10;Log it here..."></textarea>
+    <button class="save-btn" onclick="saveNote()">Save note</button>
+    <div style="margin-top:16px;" id="savedNotesList"></div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showScreen('workout',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h10M7 13h6"/></svg>
+    <span>Workout</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen('log',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+    <span>Log</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen('notes',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    <span>Notes</span>
+  </button>
+</nav>
+
+<script>
+// SVG illustrations — stick figure style, white stroke on dark bg
+const ILLUSTRATIONS = {
+  'Hip Thrust (Barbell)': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- bench -->
+      <rect x="18" y="44" width="28" height="6" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <!-- barbell across hips -->
+      <line x1="8" y1="36" x2="72" y2="36" stroke="#c8f563" stroke-width="2.5"/>
+      <circle cx="8" cy="36" r="5" fill="none" stroke="#c8f563" stroke-width="2"/>
+      <circle cx="72" cy="36" r="5" fill="none" stroke="#c8f563" stroke-width="2"/>
+      <!-- body: shoulders on bench, hips up, feet on floor -->
+      <!-- torso -->
+      <line x1="30" y1="44" x2="40" y2="36" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- head -->
+      <circle cx="28" cy="42" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- upper legs: bent knees -->
+      <line x1="40" y1="36" x2="52" y2="52" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- lower legs: feet on floor -->
+      <line x1="52" y1="52" x2="52" y2="64" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- arrow up at hips -->
+      <line x1="40" y1="32" x2="40" y2="24" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <polygon points="40,20 37,26 43,26" fill="#c8f563"/>
+      <!-- label -->
+      <text x="80" y="38" font-size="9" fill="#888" font-family="sans-serif">Hips</text>
+      <text x="80" y="48" font-size="9" fill="#888" font-family="sans-serif">up</text>
+    </svg>`,
+    desc: `Shoulders rest on bench edge, barbell sits across hip crease. Drive heels into floor and thrust hips straight up. Full lockout at top — glutes squeezed hard. Lower controlled.`
+  },
+  'Bulgarian Split Squat': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- rear bench -->
+      <rect x="62" y="46" width="28" height="5" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- front foot -->
+      <line x1="28" y1="64" x2="36" y2="64" stroke="#f0f0f0" stroke-width="2.5"/>
+      <!-- front shin vertical -->
+      <line x1="32" y1="64" x2="32" y2="50" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- front thigh -->
+      <line x1="32" y1="50" x2="48" y2="36" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- torso upright -->
+      <line x1="48" y1="36" x2="48" y2="18" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- head -->
+      <circle cx="48" cy="13" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- rear thigh to bench -->
+      <line x1="48" y1="36" x2="68" y2="46" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- dumbbells in hands -->
+      <rect x="42" y="34" width="4" height="8" rx="1" fill="#c8f563"/>
+      <rect x="54" y="34" width="4" height="8" rx="1" fill="#c8f563"/>
+      <!-- knee arrow down -->
+      <line x1="32" y1="50" x2="32" y2="58" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <polygon points="32,62 29,56 35,56" fill="#c8f563"/>
+    </svg>`,
+    desc: `Rear foot elevated on bench, front foot stepped well forward. Lower until rear knee hovers just above floor. Keep torso upright — don't lean forward. Drive through front heel to stand.`
+  },
+  'Cable Pull-Through': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- cable machine post -->
+      <rect x="4" y="30" width="6" height="34" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <circle cx="7" cy="55" r="3" fill="#555" stroke="#888" stroke-width="1"/>
+      <!-- cable line -->
+      <line x1="10" y1="55" x2="44" y2="55" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- hinge position: hips back, torso forward -->
+      <!-- feet -->
+      <line x1="36" y1="64" x2="46" y2="64" stroke="#f0f0f0" stroke-width="2.5"/>
+      <line x1="52" y1="64" x2="62" y2="64" stroke="#f0f0f0" stroke-width="2.5"/>
+      <!-- shins slight bend -->
+      <line x1="41" y1="64" x2="44" y2="52" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="57" y1="64" x2="54" y2="52" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- hips back - butt pushed back -->
+      <line x1="44" y1="52" x2="48" y2="46" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="54" y1="52" x2="48" y2="46" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- torso angled forward -->
+      <line x1="48" y1="46" x2="42" y2="34" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- head -->
+      <circle cx="40" cy="29" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- arms reaching back to cable -->
+      <line x1="42" y1="38" x2="30" y2="50" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- hip arrow -->
+      <line x1="56" y1="44" x2="66" y2="38" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <polygon points="69,36 63,37 66,43" fill="#c8f563"/>
+      <text x="68" y="35" font-size="8" fill="#888" font-family="sans-serif">Drive</text>
+    </svg>`,
+    desc: `Stand facing away from low cable, rope between legs. Hinge at hips pushing them back, torso tips forward. Drive hips forward to stand — like a hip hinge, not a squat. Glutes do the work.`
+  },
+  'Leg Press (feet high)': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- machine seat back -->
+      <rect x="6" y="28" width="6" height="30" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <!-- seat -->
+      <rect x="6" y="54" width="22" height="5" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <!-- press plate -->
+      <rect x="74" y="18" width="8" height="36" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <!-- floor line -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- body reclined -->
+      <!-- torso -->
+      <line x1="12" y1="52" x2="28" y2="44" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- head -->
+      <circle cx="10" cy="47" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- thighs angled up, feet HIGH on plate -->
+      <line x1="28" y1="44" x2="56" y2="28" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="28" y1="44" x2="56" y2="36" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- lower legs to plate -->
+      <line x1="56" y1="28" x2="74" y2="26" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="56" y1="36" x2="74" y2="34" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- feet on plate highlighted -->
+      <rect x="72" y="22" width="8" height="16" rx="1" fill="#c8f563" opacity="0.3" stroke="#c8f563" stroke-width="1"/>
+      <!-- arrow showing feet high -->
+      <text x="84" y="24" font-size="8" fill="#c8f563" font-family="sans-serif">Feet</text>
+      <text x="84" y="34" font-size="8" fill="#c8f563" font-family="sans-serif">high</text>
+    </svg>`,
+    desc: `Recline in leg press machine. Place feet HIGH on the plate — upper half. This shifts the load from quads to glutes and hamstrings. Lower controlled to 90 degrees, press back without locking out.`
+  },
+  'Seated Leg Curl': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- machine -->
+      <rect x="10" y="30" width="60" height="8" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <rect x="10" y="52" width="60" height="5" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- seated figure -->
+      <!-- torso upright -->
+      <line x1="28" y1="38" x2="28" y2="22" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- head -->
+      <circle cx="28" cy="17" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- upper legs flat on pad -->
+      <line x1="28" y1="38" x2="58" y2="38" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- lower legs: curled down — contracted position -->
+      <line x1="58" y1="38" x2="60" y2="54" stroke="#c8f563" stroke-width="2.5"/>
+      <!-- ankle pad -->
+      <circle cx="60" cy="55" r="3" fill="#555" stroke="#c8f563" stroke-width="1.5"/>
+      <!-- arc showing curl motion -->
+      <path d="M 58 38 Q 72 46 60 54" stroke="#c8f563" stroke-width="1" stroke-dasharray="3,2" fill="none"/>
+      <text x="72" y="44" font-size="8" fill="#888" font-family="sans-serif">Curl</text>
+    </svg>`,
+    desc: `Seated leg curl machine. Sit upright, thighs pinned under pad. Curl lower legs down and back as far as possible, squeezing hamstrings at the bottom. Slow controlled return — don't let the weight stack drop.`
+  },
+  'Seated Cable Row (wide grip)': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- cable machine -->
+      <rect x="4" y="20" width="6" height="44" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <circle cx="7" cy="42" r="3" fill="#555" stroke="#888" stroke-width="1"/>
+      <!-- cable -->
+      <line x1="10" y1="42" x2="46" y2="42" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <!-- foot platform -->
+      <rect x="12" y="56" width="28" height="4" rx="1" fill="#333" stroke="#555" stroke-width="1"/>
+      <!-- floor -->
+      <line x1="4" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- seated figure, upright torso -->
+      <!-- feet on platform -->
+      <line x1="18" y1="56" x2="26" y2="56" stroke="#f0f0f0" stroke-width="2.5"/>
+      <!-- legs -->
+      <line x1="22" y1="56" x2="28" y2="48" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="28" y1="48" x2="38" y2="48" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- torso upright -->
+      <line x1="38" y1="48" x2="38" y2="28" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- head -->
+      <circle cx="38" cy="23" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- arms pulled back to waist — contracted -->
+      <line x1="38" y1="36" x2="46" y2="42" stroke="#f0f0f0" stroke-width="2"/>
+      <line x1="38" y1="40" x2="46" y2="42" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- scapula squeeze indicator -->
+      <line x1="34" y1="32" x2="34" y2="38" stroke="#c8f563" stroke-width="2" stroke-linecap="round"/>
+      <line x1="42" y1="32" x2="42" y2="38" stroke="#c8f563" stroke-width="2" stroke-linecap="round"/>
+      <text x="52" y="30" font-size="8" fill="#888" font-family="sans-serif">Squeeze</text>
+      <text x="52" y="40" font-size="8" fill="#888" font-family="sans-serif">blades</text>
+    </svg>`,
+    desc: `Sit upright facing cable machine, feet on platform. Row handle to lower chest/stomach. Keep torso still — no rocking. Squeeze shoulder blades together at the end of each rep. Control the return.`
+  },
+  'Lat Pulldown (neutral grip)': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- overhead bar -->
+      <line x1="20" y1="8" x2="90" y2="8" stroke="#555" stroke-width="2"/>
+      <line x1="55" y1="4" x2="55" y2="8" stroke="#555" stroke-width="2"/>
+      <!-- bar handles (neutral grip = parallel) -->
+      <rect x="34" y="6" width="6" height="12" rx="2" fill="#333" stroke="#888" stroke-width="1"/>
+      <rect x="70" y="6" width="6" height="12" rx="2" fill="#333" stroke="#888" stroke-width="1"/>
+      <!-- cable lines -->
+      <line x1="37" y1="18" x2="37" y2="28" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <line x1="73" y1="18" x2="63" y2="28" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <!-- floor / seat -->
+      <rect x="28" y="54" width="44" height="5" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- figure seated, arms pulling down -->
+      <line x1="50" y1="54" x2="50" y2="30" stroke="#f0f0f0" stroke-width="2.2"/>
+      <circle cx="50" cy="25" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- arms up to bar, slight lean back -->
+      <line x1="50" y1="34" x2="37" y2="24" stroke="#f0f0f0" stroke-width="2"/>
+      <line x1="50" y1="34" x2="63" y2="24" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- highlight pull-to-chest -->
+      <line x1="44" y1="30" x2="56" y2="30" stroke="#c8f563" stroke-width="2" opacity="0.6"/>
+      <text x="76" y="38" font-size="8" fill="#888" font-family="sans-serif">Pull to</text>
+      <text x="76" y="48" font-size="8" fill="#888" font-family="sans-serif">chest</text>
+    </svg>`,
+    desc: `Sit under pulldown machine, thighs locked under pad. Use neutral (palms facing) or close grip. Pull bar to upper chest with slight backward lean — no more than 20 degrees. Elbows drive down toward hips.`
+  },
+  'Single-Arm DB Row (chest supported)': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- incline bench -->
+      <rect x="18" y="36" width="50" height="8" rx="3" fill="#333" stroke="#555" stroke-width="1" transform="rotate(-15,18,36)"/>
+      <line x1="22" y1="58" x2="22" y2="64" stroke="#555" stroke-width="2"/>
+      <line x1="62" y1="46" x2="62" y2="52" stroke="#555" stroke-width="2"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- figure lying on bench, chest down -->
+      <!-- head hanging off end -->
+      <circle cx="16" cy="44" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- torso on bench -->
+      <line x1="21" y1="44" x2="54" y2="36" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- arm hanging with DB, pulled up -->
+      <line x1="38" y1="40" x2="38" y2="56" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- DB -->
+      <rect x="34" y="56" width="10" height="5" rx="2" fill="#c8f563"/>
+      <!-- elbow pulled back (other arm shown pulled up) -->
+      <line x1="44" y1="38" x2="44" y2="26" stroke="#c8f563" stroke-width="2.2"/>
+      <polygon points="44,22 41,28 47,28" fill="#c8f563"/>
+      <text x="68" y="30" font-size="8" fill="#888" font-family="sans-serif">Elbow</text>
+      <text x="68" y="40" font-size="8" fill="#888" font-family="sans-serif">to hip</text>
+    </svg>`,
+    desc: `Lie chest-down on incline bench — takes the lower back completely out of the movement. Let dumbbell hang, then drive elbow back toward hip. Full stretch at bottom, full squeeze at top. No torso rotation.`
+  },
+  'Face Pull': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- cable machine -->
+      <rect x="4" y="16" width="6" height="48" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <circle cx="7" cy="36" r="3" fill="#555" stroke="#888" stroke-width="1"/>
+      <!-- rope attachment (two ends) -->
+      <line x1="10" y1="36" x2="44" y2="36" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- standing figure, arms pulling to face -->
+      <!-- feet -->
+      <line x1="50" y1="64" x2="60" y2="64" stroke="#f0f0f0" stroke-width="2.5"/>
+      <!-- legs -->
+      <line x1="55" y1="64" x2="55" y2="48" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- torso -->
+      <line x1="55" y1="48" x2="55" y2="28" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- head -->
+      <circle cx="55" cy="23" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- elbows high, arms pulling rope to forehead -->
+      <line x1="55" y1="34" x2="44" y2="30" stroke="#f0f0f0" stroke-width="2"/>
+      <line x1="55" y1="34" x2="44" y2="40" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- elbows flared high -->
+      <line x1="55" y1="34" x2="62" y2="24" stroke="#c8f563" stroke-width="1.5"/>
+      <line x1="55" y1="34" x2="62" y2="44" stroke="#c8f563" stroke-width="1.5"/>
+      <text x="66" y="20" font-size="8" fill="#c8f563" font-family="sans-serif">Elbows</text>
+      <text x="66" y="30" font-size="8" fill="#c8f563" font-family="sans-serif">high</text>
+    </svg>`,
+    desc: `Set cable at face height or slightly above. Pull rope toward forehead, elbows flaring out and back. At the end position, externally rotate — thumbs pointing behind you. Rear delts and rotator cuff. Light weight, controlled.`
+  },
+  'Cable Bicep Curl': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- cable machine -->
+      <rect x="4" y="24" width="6" height="40" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <circle cx="7" cy="58" r="3" fill="#555" stroke="#888" stroke-width="1"/>
+      <!-- cable -->
+      <line x1="10" y1="58" x2="44" y2="46" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- standing figure, arm curled -->
+      <line x1="55" y1="64" x2="65" y2="64" stroke="#f0f0f0" stroke-width="2.5"/>
+      <line x1="60" y1="64" x2="60" y2="46" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="60" y1="46" x2="60" y2="26" stroke="#f0f0f0" stroke-width="2.2"/>
+      <circle cx="60" cy="21" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- elbow pinned, forearm curled up -->
+      <line x1="60" y1="40" x2="55" y2="40" stroke="#888" stroke-width="1.5" stroke-dasharray="2,2"/>
+      <!-- upper arm pinned -->
+      <line x1="60" y1="40" x2="60" y2="56" stroke="#f0f0f0" stroke-width="2.5"/>
+      <!-- forearm curled to shoulder -->
+      <line x1="60" y1="40" x2="44" y2="32" stroke="#c8f563" stroke-width="2.5"/>
+      <!-- elbow pin dot -->
+      <circle cx="60" cy="40" r="3" fill="#c8f563"/>
+      <text x="72" y="36" font-size="8" fill="#888" font-family="sans-serif">Elbow</text>
+      <text x="72" y="46" font-size="8" fill="#888" font-family="sans-serif">pinned</text>
+    </svg>`,
+    desc: `Stand facing low cable. Keep upper arm pinned to side — only the forearm moves. Curl up to shoulder, squeeze at the top. Lower slowly — 3 seconds down. Cable keeps tension through the full range unlike a dumbbell.`
+  },
+  'Romanian Deadlift (dumbbell)': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- figure in hinge position -->
+      <!-- feet -->
+      <line x1="44" y1="64" x2="56" y2="64" stroke="#f0f0f0" stroke-width="2.5"/>
+      <line x1="60" y1="64" x2="72" y2="64" stroke="#f0f0f0" stroke-width="2.5"/>
+      <!-- soft knee shins -->
+      <line x1="50" y1="64" x2="48" y2="52" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="66" y1="64" x2="64" y2="52" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- hips pushed back -->
+      <line x1="48" y1="52" x2="56" y2="44" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="64" y1="52" x2="56" y2="44" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- torso hinged forward, flat back -->
+      <line x1="56" y1="44" x2="36" y2="32" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- head neutral -->
+      <circle cx="32" cy="27" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- dumbbells hanging straight down -->
+      <rect x="38" y="44" width="8" height="5" rx="2" fill="#c8f563"/>
+      <rect x="50" y="46" width="8" height="5" rx="2" fill="#c8f563"/>
+      <!-- flat back indicator -->
+      <line x1="38" y1="35" x2="54" y2="42" stroke="#c8f563" stroke-width="1.5"/>
+      <text x="72" y="32" font-size="8" fill="#c8f563" font-family="sans-serif">Flat</text>
+      <text x="72" y="42" font-size="8" fill="#c8f563" font-family="sans-serif">back</text>
+      <!-- hip hinge arrow -->
+      <path d="M 56 40 Q 70 36 66 52" stroke="#888" stroke-width="1" stroke-dasharray="3,2" fill="none"/>
+    </svg>`,
+    desc: `Hold dumbbells in front of thighs. Hinge at hips — push them back — torso tips forward with a flat back. Feel the hamstring stretch. Stop before your back rounds — that's your range. Drive hips through to stand. Not a squat.`
+  },
+  'Single-Leg Hip Thrust': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- bench -->
+      <rect x="14" y="42" width="28" height="6" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- body: shoulders on bench, one leg driving -->
+      <!-- torso -->
+      <line x1="26" y1="42" x2="42" y2="32" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- head -->
+      <circle cx="24" cy="37" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- working leg: bent, foot on floor -->
+      <line x1="42" y1="32" x2="52" y2="48" stroke="#c8f563" stroke-width="2.5"/>
+      <line x1="52" y1="48" x2="52" y2="64" stroke="#c8f563" stroke-width="2.5"/>
+      <!-- non-working leg: extended straight out -->
+      <line x1="42" y1="32" x2="66" y2="30" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- foot extended -->
+      <line x1="66" y1="30" x2="72" y2="32" stroke="#f0f0f0" stroke-width="1.5"/>
+      <!-- hip up arrow -->
+      <line x1="42" y1="28" x2="42" y2="20" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <polygon points="42,16 39,22 45,22" fill="#c8f563"/>
+      <text x="74" y="26" font-size="8" fill="#888" font-family="sans-serif">Leg</text>
+      <text x="74" y="36" font-size="8" fill="#888" font-family="sans-serif">straight</text>
+    </svg>`,
+    desc: `Same setup as hip thrust but one leg extended straight out. Drive through the working heel only. This isolates each glute individually — important for addressing the strength difference between sides. Note if right glute fires less.`
+  },
+  'Cable Kickback': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- cable machine low -->
+      <rect x="4" y="44" width="6" height="20" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <circle cx="7" cy="60" r="3" fill="#555" stroke="#888" stroke-width="1"/>
+      <!-- cable to ankle -->
+      <line x1="10" y1="60" x2="38" y2="56" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- figure leaning forward holding rack -->
+      <rect x="72" y="20" width="4" height="44" rx="1" fill="#333" stroke="#555" stroke-width="1"/>
+      <!-- hands on rack -->
+      <line x1="56" y1="36" x2="72" y2="36" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- torso hinged forward -->
+      <line x1="56" y1="36" x2="44" y2="48" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- head -->
+      <circle cx="52" cy="31" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- standing leg -->
+      <line x1="44" y1="48" x2="46" y2="64" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- kicking leg extended back and UP -->
+      <line x1="44" y1="48" x2="32" y2="36" stroke="#c8f563" stroke-width="2.5"/>
+      <!-- glute squeeze at top -->
+      <polygon points="30,33 28,40 36,38" fill="#c8f563"/>
+      <text x="6" y="32" font-size="8" fill="#888" font-family="sans-serif">Drive</text>
+      <text x="6" y="42" font-size="8" fill="#888" font-family="sans-serif">up</text>
+    </svg>`,
+    desc: `Attach ankle cuff to low cable. Lean slightly forward holding bench or rack for balance. Keeping leg fairly straight, drive it back and up — squeezing glute at the top. Controlled return. This is pure glute isolation.`
+  },
+  'Reverse Lunge (dumbbell)': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- figure in reverse lunge: front leg forward, back knee down -->
+      <!-- front foot -->
+      <line x1="36" y1="64" x2="48" y2="64" stroke="#f0f0f0" stroke-width="2.5"/>
+      <!-- front shin vertical -->
+      <line x1="42" y1="64" x2="42" y2="50" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- front thigh -->
+      <line x1="42" y1="50" x2="54" y2="36" stroke="#c8f563" stroke-width="2.5"/>
+      <!-- torso upright -->
+      <line x1="54" y1="36" x2="54" y2="16" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- head -->
+      <circle cx="54" cy="11" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- back thigh going behind -->
+      <line x1="54" y1="36" x2="68" y2="50" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- back lower leg / knee near floor -->
+      <line x1="68" y1="50" x2="70" y2="62" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- back knee indicator -->
+      <circle cx="68" cy="50" r="3" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="2,2"/>
+      <!-- dumbbells in hands -->
+      <rect x="46" y="32" width="5" height="10" rx="1" fill="#c8f563"/>
+      <rect x="62" y="32" width="5" height="10" rx="1" fill="#c8f563"/>
+      <!-- arrow showing step back direction -->
+      <line x1="70" y1="56" x2="82" y2="56" stroke="#888" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <polygon points="84,56 78,53 78,59" fill="#888"/>
+      <text x="72" y="44" font-size="8" fill="#888" font-family="sans-serif">Step</text>
+      <text x="72" y="53" font-size="8" fill="#888" font-family="sans-serif">back</text>
+    </svg>`,
+    desc: `Start standing, step one foot back — not forward. Lower rear knee toward floor, hovering just above. Front shin stays vertical, torso stays upright. Drive through front heel to return. Safer than forward lunge for the lower back.`
+  },
+  'Glute-Ham Raise / Nordic (assisted)': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- GHD machine base -->
+      <rect x="10" y="52" width="50" height="6" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <!-- ankle pads -->
+      <rect x="48" y="46" width="12" height="8" rx="2" fill="#333" stroke="#888" stroke-width="1"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- figure: body angled forward (eccentric — lowering down) -->
+      <!-- ankles locked in machine -->
+      <line x1="50" y1="52" x2="44" y2="52" stroke="#f0f0f0" stroke-width="2.5"/>
+      <!-- lower legs vertical -->
+      <line x1="47" y1="52" x2="42" y2="36" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- hips extended (key) -->
+      <line x1="42" y1="36" x2="30" y2="32" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- torso lowering forward — eccentric position -->
+      <line x1="30" y1="32" x2="16" y2="24" stroke="#c8f563" stroke-width="2.5"/>
+      <!-- head -->
+      <circle cx="12" cy="20" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- band assist optional -->
+      <path d="M 16 28 Q 36 18 42 28" stroke="#888" stroke-width="1.5" stroke-dasharray="3,2" fill="none"/>
+      <!-- slow arrow -->
+      <text x="62" y="28" font-size="8" fill="#c8f563" font-family="sans-serif">Slow</text>
+      <text x="62" y="38" font-size="8" fill="#c8f563" font-family="sans-serif">lower</text>
+      <line x1="60" y1="30" x2="50" y2="38" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="2,2"/>
+    </svg>`,
+    desc: `Kneel on pad, ankles locked under bar or pad. Lower your body forward as slowly as possible — this is the eccentric. Use a resistance band for assistance on the way up if needed. Hips stay extended throughout — don't fold at the waist.`
+  },
+  'Incline DB Press': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- incline bench -->
+      <rect x="10" y="40" width="50" height="7" rx="2" fill="#333" stroke="#555" stroke-width="1" transform="rotate(-20,10,40)"/>
+      <line x1="14" y1="60" x2="14" y2="64" stroke="#555" stroke-width="2"/>
+      <line x1="52" y1="46" x2="52" y2="52" stroke="#555" stroke-width="2"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- figure on bench, pressing up -->
+      <circle cx="16" cy="38" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <line x1="21" y1="40" x2="48" y2="28" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- arms pressing dumbbells up -->
+      <line x1="34" y1="34" x2="30" y2="22" stroke="#f0f0f0" stroke-width="2"/>
+      <line x1="34" y1="34" x2="44" y2="20" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- dumbbells -->
+      <rect x="26" y="18" width="8" height="5" rx="2" fill="#c8f563"/>
+      <rect x="40" y="16" width="8" height="5" rx="2" fill="#c8f563"/>
+      <!-- press direction arrow -->
+      <line x1="36" y1="20" x2="36" y2="10" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <polygon points="36,6 33,12 39,12" fill="#c8f563"/>
+      <!-- back flat on bench indicator -->
+      <text x="62" y="36" font-size="8" fill="#888" font-family="sans-serif">Back</text>
+      <text x="62" y="46" font-size="8" fill="#888" font-family="sans-serif">flat</text>
+    </svg>`,
+    desc: `Lie on incline bench (30-45 degrees), lower back flat on pad. Press dumbbells up and slightly in toward each other at the top. Elbows track at about 45 degrees — not flared wide. Control the descent for 2 seconds.`
+  },
+  'Seated DB Shoulder Press': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- bench -->
+      <rect x="30" y="50" width="40" height="5" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <rect x="28" y="28" width="5" height="24" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- seated figure pressing overhead -->
+      <!-- legs -->
+      <line x1="40" y1="50" x2="36" y2="64" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="60" y1="50" x2="64" y2="64" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- torso upright -->
+      <line x1="50" y1="50" x2="50" y2="28" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- head -->
+      <circle cx="50" cy="23" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- arms at 90 degrees at ear level, then pressing up -->
+      <line x1="50" y1="36" x2="38" y2="36" stroke="#f0f0f0" stroke-width="2"/>
+      <line x1="38" y1="36" x2="34" y2="22" stroke="#c8f563" stroke-width="2.5"/>
+      <line x1="50" y1="36" x2="62" y2="36" stroke="#f0f0f0" stroke-width="2"/>
+      <line x1="62" y1="36" x2="66" y2="22" stroke="#c8f563" stroke-width="2.5"/>
+      <!-- DBs overhead -->
+      <rect x="30" y="18" width="8" height="5" rx="2" fill="#c8f563"/>
+      <rect x="62" y="18" width="8" height="5" rx="2" fill="#c8f563"/>
+      <!-- upright spine indicator -->
+      <text x="74" y="36" font-size="8" fill="#888" font-family="sans-serif">Sit</text>
+      <text x="74" y="46" font-size="8" fill="#888" font-family="sans-serif">tall</text>
+    </svg>`,
+    desc: `Sit upright with back support. Start with dumbbells at shoulder height, elbows at 90 degrees. Press straight up — slight forward angle at the top is fine. Don't lean back to push more weight. Keep lower back flat on the pad.`
+  },
+  'Cable Lateral Raise': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- cable machine -->
+      <rect x="4" y="20" width="6" height="44" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <circle cx="7" cy="50" r="3" fill="#555" stroke="#888" stroke-width="1"/>
+      <!-- cable line -->
+      <line x1="10" y1="50" x2="46" y2="42" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- standing figure, one arm raising laterally -->
+      <line x1="56" y1="64" x2="66" y2="64" stroke="#f0f0f0" stroke-width="2.5"/>
+      <line x1="61" y1="64" x2="61" y2="44" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="61" y1="44" x2="61" y2="24" stroke="#f0f0f0" stroke-width="2.2"/>
+      <circle cx="61" cy="19" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- arm at side crossing body to cable -->
+      <line x1="61" y1="36" x2="46" y2="42" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- raised arm (other side) to shoulder height -->
+      <line x1="61" y1="36" x2="80" y2="30" stroke="#c8f563" stroke-width="2.5"/>
+      <!-- shoulder height indicator -->
+      <line x1="56" y1="30" x2="86" y2="30" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="76" y="44" font-size="8" fill="#c8f563" font-family="sans-serif">Lead</text>
+      <text x="76" y="54" font-size="8" fill="#c8f563" font-family="sans-serif">elbow</text>
+    </svg>`,
+    desc: `Stand side-on to cable machine, cable coming from low across your body. Raise the far arm out to the side leading with the elbow. Stop at shoulder height. Cable provides constant tension unlike a dumbbell which goes slack at the bottom.`
+  },
+  'Tricep Pushdown': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- cable machine overhead -->
+      <rect x="44" y="4" width="6" height="20" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <circle cx="47" cy="22" r="3" fill="#555" stroke="#888" stroke-width="1"/>
+      <!-- cable down -->
+      <line x1="47" y1="25" x2="47" y2="38" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <!-- bar/rope handle -->
+      <line x1="38" y1="38" x2="56" y2="38" stroke="#888" stroke-width="3"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- standing figure, elbows pinned, pressing down -->
+      <line x1="55" y1="64" x2="65" y2="64" stroke="#f0f0f0" stroke-width="2.5"/>
+      <line x1="60" y1="64" x2="60" y2="42" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="60" y1="42" x2="60" y2="22" stroke="#f0f0f0" stroke-width="2.2"/>
+      <circle cx="60" cy="17" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- upper arms pinned to sides -->
+      <line x1="60" y1="30" x2="50" y2="36" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="60" y1="30" x2="70" y2="36" stroke="#f0f0f0" stroke-width="2.2"/>
+      <!-- forearms extending down (contracted) -->
+      <line x1="50" y1="36" x2="42" y2="50" stroke="#c8f563" stroke-width="2.5"/>
+      <line x1="70" y1="36" x2="72" y2="50" stroke="#c8f563" stroke-width="2.5"/>
+      <!-- elbow pin indicators -->
+      <circle cx="50" cy="36" r="3" fill="#c8f563"/>
+      <circle cx="70" cy="36" r="3" fill="#c8f563"/>
+      <text x="76" y="30" font-size="8" fill="#c8f563" font-family="sans-serif">Elbows</text>
+      <text x="76" y="40" font-size="8" fill="#c8f563" font-family="sans-serif">fixed</text>
+    </svg>`,
+    desc: `Stand facing cable machine with overhead attachment. Keep upper arms glued to your sides — only forearms move. Press the bar or rope down until arms are fully extended. Slow controlled return. Don't let elbows drift forward.`
+  },
+  'Cable Fly (low to high)': {
+    svg: `<svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- two cable machines either side -->
+      <rect x="2" y="40" width="5" height="24" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <circle cx="4.5" cy="60" r="3" fill="#555" stroke="#888" stroke-width="1"/>
+      <rect x="93" y="40" width="5" height="24" rx="2" fill="#333" stroke="#555" stroke-width="1"/>
+      <circle cx="95.5" cy="60" r="3" fill="#555" stroke="#888" stroke-width="1"/>
+      <!-- cables coming from low, crossing up -->
+      <line x1="7" y1="60" x2="46" y2="28" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <line x1="93" y1="60" x2="64" y2="28" stroke="#c8f563" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <!-- floor -->
+      <line x1="10" y1="64" x2="100" y2="64" stroke="#444" stroke-width="1.5"/>
+      <!-- standing figure, slight lean forward, arms sweeping up -->
+      <line x1="55" y1="64" x2="65" y2="64" stroke="#f0f0f0" stroke-width="2.5"/>
+      <line x1="60" y1="64" x2="58" y2="42" stroke="#f0f0f0" stroke-width="2.2"/>
+      <line x1="58" y1="42" x2="58" y2="24" stroke="#f0f0f0" stroke-width="2.2"/>
+      <circle cx="58" cy="19" r="5" fill="none" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- arms sweeping from low/wide to high/together -->
+      <line x1="58" y1="36" x2="44" y2="44" stroke="#f0f0f0" stroke-width="2"/>
+      <line x1="58" y1="36" x2="72" y2="44" stroke="#f0f0f0" stroke-width="2"/>
+      <!-- converging at top -->
+      <line x1="44" y1="44" x2="46" y2="28" stroke="#c8f563" stroke-width="2.5"/>
+      <line x1="72" y1="44" x2="64" y2="28" stroke="#c8f563" stroke-width="2.5"/>
+      <!-- meeting point -->
+      <circle cx="55" cy="28" r="3" fill="#c8f563" opacity="0.7"/>
+      <text x="72" y="18" font-size="8" fill="#c8f563" font-family="sans-serif">Squeeze</text>
+      <text x="72" y="28" font-size="8" fill="#c8f563" font-family="sans-serif">here</text>
+    </svg>`,
+    desc: `Set cables low (ankle height). Stand in the middle, slight forward lean. Arms start wide and low, sweep up and inward in an arc — like hugging a large barrel. Squeeze at the top where hands meet. Targets lower and mid chest.`
+  }
+};
+
+const DAYS = [
+  {
+    id: 'mon', name: 'MON', label: 'Glutes & Legs',
+    warmup: [
+      { name: '5 min bike or walk', detail: 'Low intensity only. Get the discs moving and blood flowing before you touch anything loaded. Non-negotiable on lower days.' },
+      { name: 'Cat-cow — 10 slow reps', detail: 'On hands and knees. Breathe in as you arch (cow), breathe out as you round (cat). Move through your full spinal range. This decompresses the discs and wakes up segmental movement.' },
+      { name: '90/90 hip stretch — 60 sec each side', detail: 'Sit on floor with front leg at 90 degrees and rear leg at 90 degrees behind you. Sit tall, slight forward lean. This opens the hip capsule and reduces the hip tightness that pulls on your lower back.' },
+      { name: 'Glute bridge hold — 2 x 10 reps, 2 sec hold at top', detail: 'Lie on your back, feet flat, drive hips up. Hold 2 seconds and squeeze hard at the top. This is activation — you are waking up the glutes so they fire properly during the session, not just your lower back compensating.' },
+      { name: 'Banded clamshells — 2 x 15 each side', detail: 'Lie on your side, band above knees, hips stacked. Open the top knee like a clamshell without rotating your pelvis. Targets glute medius — the side glute that stabilises your hip during single-leg movements. Weak here = extra lumbar load.' },
+      { name: 'Bodyweight single-leg RDL — 2 x 8 each side', detail: 'Stand on one leg, hinge at hip, other leg extends behind. No weight. This is a movement rehearsal and balance check. Feel where the right side differs from the left — this reflects the nerve involvement. Do not skip it.' },
+    ],
+    exercises: [
+      { name: 'Hip Thrust (Barbell)', sets: 4, reps: '8-10', rest: 90, cue: 'Drive through heels. Full hip extension at top — squeeze hard. No hyperextension of the lumbar. Keep chin tucked.', spineNote: 'Set up bench height so hips hinge freely. Avoid arching the lower back at lockout.' },
+      { name: 'Bulgarian Split Squat', sets: 3, reps: '10-12 each', rest: 90, cue: 'Front foot far enough forward that shin stays vertical. Drive knee out. Feel it in the glute, not the quad.', spineNote: 'Keep torso upright — forward lean increases lumbar load. Use dumbbells not barbell.' },
+      { name: 'Cable Pull-Through', sets: 3, reps: '12-15', rest: 60, cue: 'Hinge from the hips, not the lower back. Push hips back, not down. Squeeze glutes to drive forward.', spineNote: 'Excellent for disc issues — cable keeps load horizontal, minimal spinal compression.' },
+      { name: 'Leg Press (feet high)', sets: 3, reps: '12-15', rest: 75, cue: 'High foot placement shifts load to glutes and hamstrings. Control the eccentric — 3 seconds down.', spineNote: 'Keep lower back flat against the pad throughout. Do not let hips roll under at the bottom.' },
+      { name: 'Seated Leg Curl', sets: 3, reps: '12-15', rest: 60, cue: 'Full stretch at the top. Squeeze at the bottom. No momentum.', spineNote: 'Seated preferred over lying — less lumbar involvement.' },
+    ]
+  },
+  {
+    id: 'tue', name: 'TUE', label: 'Upper / Back',
+    warmup: [
+      { name: '5 min row or bike', detail: 'Keep it easy — this is just blood flow and temperature. On the rower, focus on sitting tall and driving with legs, not yanking with your back.' },
+      { name: 'Cat-cow — 10 slow reps', detail: 'Same as lower days — decompress the spine before any session regardless of focus. The thoracic spine needs this before pulling work.' },
+      { name: 'Band pull-aparts — 2 x 20', detail: 'Hold a resistance band in front of you at shoulder height, arms straight. Pull apart until band touches your chest, squeezing shoulder blades together. This activates the rear delts and scapular retractors before all the rowing work.' },
+      { name: 'Scapular wall slides — 2 x 10', detail: 'Stand with back flat against a wall, arms bent at 90 degrees (goalpost position). Slide arms up the wall keeping elbows and wrists in contact. You will feel your upper back working. This gets the scapulae moving properly before loading.' },
+      { name: 'Shoulder CARS — 5 each arm', detail: 'Controlled Articular Rotations. Stand tall, arm by side. Slowly rotate your shoulder through its maximum range in a circle — forward, up, back, down. Move as far as you can control. This is joint prep, not stretching.' },
+      { name: 'Doorway chest stretch — 30 sec each side', detail: 'Place forearm on a door frame, arm at 90 degrees. Step through gently until you feel a stretch across the chest and front shoulder. Tight pecs pull the shoulder forward and reduce how well you can retract during rows.' },
+    ],
+    exercises: [
+      { name: 'Seated Cable Row (wide grip)', sets: 4, reps: '10-12', rest: 90, cue: 'Drive elbows back and down. Squeeze shoulder blades together at the end. Don\'t rock — keep torso still.', spineNote: 'Seated cable keeps the spine neutral. No lumbar extension at contraction.' },
+      { name: 'Lat Pulldown (neutral grip)', sets: 4, reps: '10-12', rest: 90, cue: 'Pull to upper chest, not behind neck. Lean back slightly — no more than 20 degrees. Feel lats, not arms.', spineNote: 'Neutral grip reduces shoulder stress. Controlled return — don\'t let stack crash.' },
+      { name: 'Single-Arm DB Row (chest supported)', sets: 3, reps: '12 each', rest: 75, cue: 'Chest on the bench takes the spine out of it entirely. Elbow drives to hip, not to ceiling. Full stretch at the bottom.', spineNote: 'Chest-supported is the best variation for your back — no spinal bracing needed.' },
+      { name: 'Face Pull', sets: 3, reps: '15-20', rest: 60, cue: 'Pull to forehead, elbows high. External rotate at the end — thumbs back. Rear delts and rotator cuff.', spineNote: 'Light weight, high reps. Important for shoulder health given all the pulling work.' },
+      { name: 'Cable Bicep Curl', sets: 3, reps: '12-15', rest: 60, cue: 'Keep elbows pinned. Full range. Slow eccentric — 3 seconds down.', spineNote: null },
+    ]
+  },
+  {
+    id: 'thu', name: 'THU', label: 'Glutes & Posterior',
+    warmup: [
+      { name: '5 min bike or walk', detail: 'Same as Monday. Lower body days always start with this — the discs are particularly vulnerable to load without prior movement, and morning stiffness compounds this on Thursday if sleep was poor.' },
+      { name: 'Cat-cow — 10 slow reps', detail: 'Decompress and mobilise the lumbar spine. Take your time here. If you feel any right-sided symptoms during this, do 5 more reps and reassess before loading.' },
+      { name: '90/90 hip stretch — 60 sec each side', detail: 'Same as Monday. The hip capsule tightens between sessions and this is the most efficient way to open it back up. Do not rush it.' },
+      { name: 'Lying hamstring stretch — 30 sec each leg', detail: 'Lie on your back, loop a band or towel around one foot, extend leg toward ceiling. Hold a gentle stretch — not aggressive. Tight hamstrings pull on the sitting bones and increase posterior pelvic tilt, which loads the discs.' },
+      { name: 'Monster walks with band — 2 x 10 steps each direction', detail: 'Band above knees, partial squat position, take lateral steps. Keep hips level and tension in the band the whole time. Activates glute medius before single-leg and hip-dominant work. Critical for side-to-side stability.' },
+      { name: 'Glute bridge hold — 2 x 10 reps, 2 sec hold', detail: 'Same as Monday — this is the final activation check before you load. If you cannot feel both glutes working equally here, take note. The right side may need more cues during the session.' },
+    ],
+    exercises: [
+      { name: 'Romanian Deadlift (dumbbell)', sets: 4, reps: '10-12', rest: 90, cue: 'Hinge at hips, soft knee bend. Feel hamstring stretch. Stop when back starts to round — that\'s your range. Drive hips through at the top.', spineNote: 'Dumbbell RDL preferred over barbell — less axial loading. Stop the set immediately if you feel radiating symptoms.' },
+      { name: 'Single-Leg Hip Thrust', sets: 3, reps: '12 each', rest: 75, cue: 'Other leg extended or 90 degrees. Drive through the working heel. Full extension, hold 1 second at top.', spineNote: 'Addresses strength asymmetry from nerve involvement on right side. Note if right glute fires less.' },
+      { name: 'Cable Kickback', sets: 3, reps: '15 each', rest: 60, cue: 'Anchor low. Slight forward lean on a bench or rack. Drive leg back and up — squeeze at the top. Control the return.', spineNote: 'Minimal spinal loading. Great isolation for glute max.' },
+      { name: 'Reverse Lunge (dumbbell)', sets: 3, reps: '10-12 each', rest: 75, cue: 'Step back, not forward — more glute dominant. Back knee hovers above floor. Torso upright throughout.', spineNote: 'Reverse lunge is safer than forward lunge — less knee and lower back stress.' },
+      { name: 'Glute-Ham Raise / Nordic (assisted)', sets: 3, reps: '8-10', rest: 90, cue: 'Eccentric focus — lower as slowly as possible. Use band for assistance if needed. Hamstrings and glutes.', spineNote: 'Keep hips extended throughout. Do not flex at the lumbar to compensate.' },
+    ]
+  },
+  {
+    id: 'fri', name: 'FRI', label: 'Upper / Push',
+    warmup: [
+      { name: '5 min row or bike', detail: 'Easy pace. Focus on posture — tall spine, shoulders back. Friday push day taxes the front of the shoulder, so you want that joint warm before pressing anything overhead.' },
+      { name: 'Cat-cow — 10 slow reps', detail: 'Spine decompression before every session. Takes 60 seconds. Always worth it.' },
+      { name: 'Band pull-aparts — 2 x 20', detail: 'Activates the rear delts and mid-traps before pressing. This is not optional on push days — it counterbalances the forward shoulder loading and reduces injury risk. Go slow, squeeze at the end of each rep.' },
+      { name: 'Wall angels — 2 x 10', detail: 'Stand with back against wall, lower back lightly pressed in. Arms start in goalpost position. Slide arms up to overhead and back down, keeping contact with the wall throughout. This improves shoulder overhead mobility and thoracic extension — both needed for pressing.' },
+      { name: 'Arm circles — 20 sec each direction each arm', detail: 'Big slow circles at full range. This gets synovial fluid moving in the shoulder joint and flags any catches or restrictions before you load it. If one direction feels stiff, spend more time there.' },
+      { name: 'Light lateral raise — 2 x 15 with 2kg', detail: 'This is not a working set. It is a shoulder activation and movement rehearsal. Feel the deltoid, check your range, and get the rotator cuff firing before the heavier pressing starts.' },
+    ],
+    exercises: [
+      { name: 'Incline DB Press', sets: 4, reps: '10-12', rest: 90, cue: 'Controlled eccentric — 2 seconds down. Don\'t flare elbows. Drive to ceiling, not back toward face.', spineNote: 'Incline bench — keep lower back flat on the pad. Avoid excessive arch.' },
+      { name: 'Seated DB Shoulder Press', sets: 3, reps: '10-12', rest: 90, cue: 'Neutral spine, seated upright. Drive overhead, slight forward tilt at the top. Don\'t lean back to compensate.', spineNote: 'Seated keeps lumbar out of it. Avoid arching to press heavier.' },
+      { name: 'Cable Lateral Raise', sets: 3, reps: '15 each', rest: 60, cue: 'Cable provides constant tension through the whole range. Lead with elbow, not wrist. Stop at shoulder height.', spineNote: null },
+      { name: 'Tricep Pushdown', sets: 3, reps: '12-15', rest: 60, cue: 'Elbows pinned to sides. Full extension. Slow return.', spineNote: null },
+      { name: 'Cable Fly (low to high)', sets: 3, reps: '12-15', rest: 60, cue: 'Slight forward lean. Draw hands up and together. Squeeze at the top. Feel lower pec and chest.', spineNote: null },
+    ]
+  },
+  { id: 'wed', name: 'WED', label: 'Rest / Walk', rest: true },
+  { id: 'sat', name: 'SAT', label: 'Rest / Stretch', rest: true },
+  { id: 'sun', name: 'SUN', label: 'Rest / Stretch', rest: true },
+];
+
+const ORDERED_DAYS = ['mon','tue','wed','thu','fri','sat','sun'];
+let activeDay = 'mon';
+let timerInterval = null;
+let timerSeconds = 0;
+let timerRunning = false;
+let restInterval = null;
+let restSeconds = 0;
+let setsDone = 0;
+let totalSets = 0;
+let setsState = {};
+
+function getDayData(id) { return DAYS.find(d => d.id === id); }
+
+function buildDaySelector() {
+  const el = document.getElementById('daySelector');
+  el.innerHTML = '';
+  ORDERED_DAYS.forEach(id => {
+    const d = getDayData(id);
+    const btn = document.createElement('div');
+    btn.className = 'day-btn' + (id === activeDay ? ' active' : '') + (d.rest ? ' rest' : '');
+    btn.onclick = () => selectDay(id);
+    btn.innerHTML = `<div class="d-name">${d.name}</div><div class="d-label">${d.label}</div>`;
+    el.appendChild(btn);
+  });
+}
+
+function selectDay(id) {
+  activeDay = id;
+  setsDone = 0;
+  setsState = {};
+  buildDaySelector();
+  renderWorkout();
+}
+
+function renderWorkout() {
+  const d = getDayData(activeDay);
+  document.getElementById('currentDayLabel').textContent = d.name;
+  document.getElementById('currentWorkoutTitle').textContent = d.label;
+
+  if (d.rest) {
+    document.getElementById('warmupCard').style.display = 'none';
+    document.getElementById('exerciseList').innerHTML = `
+      <div style="text-align:center;padding:60px 20px;color:var(--muted);">
+        <div style="font-size:40px;margin-bottom:12px;">🧘</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--text);">Rest day</div>
+        <div style="font-size:14px;margin-top:8px;line-height:1.6;">Light walk, hip mobility, foam rolling.<br>Keep the spine moving gently.</div>
+      </div>`;
+    document.getElementById('progressText').textContent = 'Rest day';
+    document.getElementById('progressFill').style.width = '0%';
+    return;
+  }
+
+  document.getElementById('warmupCard').style.display = 'block';
+
+  const wl = document.getElementById('warmupList');
+  wl.innerHTML = '';
+  d.warmup.forEach((item, i) => {
+    const li = document.createElement('li');
+    li.style.cssText = 'display:block;padding:10px 0;border-bottom:1px solid var(--border);';
+    const isObj = typeof item === 'object';
+    const name = isObj ? item.name : item;
+    const detail = isObj ? item.detail : null;
+    const topRow = document.createElement('div');
+    topRow.style.cssText = 'display:flex;align-items:flex-start;gap:10px;';
+    const check = document.createElement('div');
+    check.className = 'warmup-check';
+    check.style.cssText = 'margin-top:2px;flex-shrink:0;';
+    check.innerHTML = '✓';
+    check.onclick = () => { check.classList.toggle('done'); };
+    const nameEl = document.createElement('div');
+    nameEl.style.cssText = 'font-size:14px;color:var(--muted);flex:1;font-weight:500;';
+    nameEl.textContent = name;
+    topRow.appendChild(check);
+    topRow.appendChild(nameEl);
+    li.appendChild(topRow);
+    if (detail) {
+      const detailEl = document.createElement('div');
+      detailEl.style.cssText = 'font-size:12px;color:var(--dim);line-height:1.6;margin-top:5px;padding-left:30px;';
+      detailEl.textContent = detail;
+      li.appendChild(detailEl);
+    }
+    wl.appendChild(li);
+  });
+
+  totalSets = d.exercises.reduce((a,e) => a + e.sets, 0);
+  const el = document.getElementById('exerciseList');
+  el.innerHTML = '';
+
+  d.exercises.forEach((ex, i) => {
+    if (!setsState[i]) {
+      setsState[i] = Array(ex.sets).fill({weight:'', reps:'', done: false});
+    }
+    const card = document.createElement('div');
+    card.className = 'exercise-card';
+    card.id = `excard-${i}`;
+
+    let setsHTML = `<div class="sets-grid"><div class="col-head">Set</div><div class="col-head">Weight</div><div class="col-head">Reps</div><div></div>`;
+    for (let s = 0; s < ex.sets; s++) {
+      setsHTML += `
+        <div class="set-num-badge">${s+1}</div>
+        <input class="set-input" type="number" placeholder="kg" id="w-${i}-${s}" inputmode="decimal">
+        <input class="set-input" type="number" placeholder="${ex.reps.split('-')[0]}" id="r-${i}-${s}" inputmode="decimal">
+        <div class="set-done-btn" id="sd-${i}-${s}" onclick="toggleSetDone(${i},${s})">✓</div>`;
+    }
+    setsHTML += '</div>';
+
+    const ill = ILLUSTRATIONS[ex.name];
+    const illustrationHTML = ill ? `
+      <div class="ex-illustration">
+        ${ill.svg}
+        <div class="ex-desc"><strong>How to do it</strong>${ill.desc}</div>
+      </div>` : '';
+
+    const spineBlock = ex.spineNote ? `<div class="cue-box spine-cue" style="margin-top:8px;"><div class="cue-label">⚠ spine note</div><p>${ex.spineNote}</p></div>` : '';
+
+    card.innerHTML = `
+      <div class="ex-header" onclick="toggleEx(${i})">
+        <div class="ex-num" id="exnum-${i}">${i+1}</div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-meta">${ex.sets} sets · ${ex.reps} reps · ${ex.rest}s rest</div>
+        </div>
+        <div class="ex-chevron" id="chevron-${i}">▾</div>
+      </div>
+      <div class="ex-body" id="body-${i}">
+        ${illustrationHTML}
+        ${setsHTML}
+        <div class="cue-box" style="margin-top:12px;"><div class="cue-label">coaching cue</div><p>${ex.cue}</p></div>
+        ${spineBlock}
+      </div>`;
+    el.appendChild(card);
+  });
+
+  updateProgress();
+}
+
+function toggleEx(id) {
+  const body = document.getElementById(`body-${id}`);
+  const chev = document.getElementById(`chevron-${id}`);
+  if (!body) return;
+  body.classList.toggle('open');
+  if (chev) chev.classList.toggle('open');
+}
+
+function toggleSetDone(exIdx, setIdx) {
+  const btn = document.getElementById(`sd-${exIdx}-${setIdx}`);
+  const wasDone = btn.classList.contains('done');
+  btn.classList.toggle('done');
+  if (!wasDone) {
+    setsDone++;
+    startRest(getDayData(activeDay).exercises[exIdx].rest);
+  } else {
+    setsDone = Math.max(0, setsDone - 1);
+  }
+  updateProgress();
+  updateExCardState(exIdx);
+}
+
+function updateExCardState(exIdx) {
+  const d = getDayData(activeDay);
+  const ex = d.exercises[exIdx];
+  const card = document.getElementById(`excard-${exIdx}`);
+  let doneSets = 0;
+  for (let s = 0; s < ex.sets; s++) {
+    if (document.getElementById(`sd-${exIdx}-${s}`)?.classList.contains('done')) doneSets++;
+  }
+  card.className = 'exercise-card' + (doneSets === ex.sets ? ' completed-ex' : doneSets > 0 ? ' active-ex' : '');
+}
+
+function updateProgress() {
+  document.getElementById('progressText').textContent = `${setsDone} / ${totalSets} sets`;
+  const pct = totalSets > 0 ? Math.round((setsDone / totalSets) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function startTimer() {
+  if (timerRunning) return;
+  timerRunning = true;
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    document.getElementById('timerDisplay').textContent = formatTime(timerSeconds);
+  }, 1000);
+}
+function pauseTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+}
+function resetTimer() {
+  pauseTimer();
+  timerSeconds = 0;
+  document.getElementById('timerDisplay').textContent = '00:00';
+}
+function formatTime(s) {
+  return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+}
+
+function startRest(seconds) {
+  clearInterval(restInterval);
+  restSeconds = seconds;
+  document.getElementById('restCountdown').textContent = restSeconds;
+  document.getElementById('restOverlay').classList.add('active');
+  restInterval = setInterval(() => {
+    restSeconds--;
+    document.getElementById('restCountdown').textContent = restSeconds;
+    if (restSeconds <= 0) skipRest();
+  }, 1000);
+}
+function skipRest() {
+  clearInterval(restInterval);
+  document.getElementById('restOverlay').classList.remove('active');
+}
+
+function saveNote() {
+  const text = document.getElementById('notesInput').value.trim();
+  if (!text) return;
+  const notes = JSON.parse(localStorage.getItem('ptNotes') || '[]');
+  const now = new Date();
+  notes.unshift({ text, date: now.toLocaleDateString('en-AU'), time: now.toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'}) });
+  localStorage.setItem('ptNotes', JSON.stringify(notes));
+  document.getElementById('notesInput').value = '';
+  renderNotes();
+}
+function renderNotes() {
+  const notes = JSON.parse(localStorage.getItem('ptNotes') || '[]');
+  const el = document.getElementById('savedNotesList');
+  el.innerHTML = notes.slice(0,5).map(n => `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;">
+      <div style="font-size:11px;color:var(--dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">${n.date} · ${n.time}</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.6;">${n.text.replace(/\n/g,'<br>')}</div>
+    </div>`).join('');
+}
+
+function showScreen(name, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`screen-${name}`).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'notes') renderNotes();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const wa = document.querySelector('.workout-area');
+  const timerBar = document.createElement('div');
+  timerBar.className = 'timer-bar';
+  timerBar.style.marginBottom = '14px';
+  timerBar.innerHTML = `
+    <div class="timer-info">
+      <div class="timer-label">Session time</div>
+      <div class="timer-display" id="timerDisplay">00:00</div>
+    </div>
+    <div class="timer-controls">
+      <button class="btn-icon" onclick="resetTimer()">↺</button>
+      <button class="btn-icon primary" onclick="timerRunning ? pauseTimer() : startTimer()" id="timerToggle">▶</button>
+    </div>`;
+  wa.insertBefore(timerBar, wa.firstChild);
+
+  const streakVal = parseInt(localStorage.getItem('weekStreak') || '0');
+  document.getElementById('streakCount').textContent = streakVal;
+
+  buildDaySelector();
+  renderWorkout();
+});
+</script>
+</body>
+</html>
